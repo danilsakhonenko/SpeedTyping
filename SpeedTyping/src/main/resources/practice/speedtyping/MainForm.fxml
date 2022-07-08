@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.text.Font?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practice.speedtyping.MainController">
+  <tabs>
+    <Tab text="Тест на скорость печати">
+         <content>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="border-pane">
+               <bottom>
+                  <FlowPane alignment="CENTER" hgap="50.0" prefHeight="100.0" prefWidth="1260.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button fx:id="cancel_btn" maxHeight="40.0" maxWidth="75.0" mnemonicParsing="false" onAction="#cancelProgress" prefHeight="40.0" prefWidth="75.0" />
+                        <Button fx:id="control_btn" maxHeight="40.0" maxWidth="75.0" mnemonicParsing="false" onAction="#controlPlay" prefHeight="40.0" prefWidth="75.0" />
+                        <Button fx:id="reset_btn" maxHeight="40.0" maxWidth="75.0" mnemonicParsing="false" onAction="#resetProgress" prefHeight="40.0" prefWidth="75.0" />
+                     </children>
+                  </FlowPane>
+               </bottom>
+               <top>
+                  <FlowPane alignment="CENTER" cache="true" hgap="5.0" prefHeight="100.0" prefWidth="1280.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label text="Язык:" />
+                        <ComboBox fx:id="language_cb">
+                           <FlowPane.margin>
+                              <Insets right="20.0" />
+                           </FlowPane.margin>
+                        </ComboBox>
+                        <Label text="Количество слов:" />
+                        <TextField fx:id="word_count_field" prefHeight="25.0" prefWidth="100.0">
+                           <FlowPane.margin>
+                              <Insets right="20.0" />
+                           </FlowPane.margin>
+                        </TextField>
+                        <CheckBox fx:id="punctuation_check" mnemonicParsing="false" text="Знаки препинания" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
+                  </FlowPane>
+               </top>
+               <center>
+                  <TextArea fx:id="given_text_field" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets />
+                     </BorderPane.margin>
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </TextArea>
+               </center>
+            </BorderPane>
+         </content></Tab>
+    <Tab text="Статистика">
+         <content>
+            <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="border-pane">
+               <top>
+                  <BorderPane prefHeight="300.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <top>
+                        <Label prefHeight="35.0" text="Последняя статистика" BorderPane.alignment="CENTER" />
+                     </top>
+                     <bottom>
+                        <FlowPane alignment="CENTER" hgap="10.0" prefHeight="45.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <Label text="Выбор графика:" />
+                              <ComboBox fx:id="graphic_cb" prefWidth="150.0" />
+                           </children>
+                        </FlowPane>
+                     </bottom>
+                     <center>
+                        <TextArea fx:id="statistics_field" prefHeight="220.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+               </top>
+               <center>
+                  <LineChart fx:id="graphic" prefHeight="400.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </LineChart>
+               </center>
+            </BorderPane>
+         </content></Tab>
+  </tabs>
+</TabPane>

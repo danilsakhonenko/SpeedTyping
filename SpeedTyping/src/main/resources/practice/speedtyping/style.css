@@ -1,0 +1,23 @@
+.root {
+    -fx-font-size: 16;
+    -fx-alignment: CENTER;
+}
+.tab > .tab-container > .tab-label{
+    -fx-pref-width: 400;
+    -fx-pref-height: 30;
+}
+.label{
+    -fx-font-size: 18;
+}
+.check-box{
+    -fx-font-size: 18;
+}
+.combo-box{
+    -fx-pref-width: 200;
+}
+.text-field{
+    -fx-pref-width: 250;
+}
+.border-pane{
+    -fx-padding: 5 10 5 10;
+}
