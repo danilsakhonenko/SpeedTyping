@@ -9,12 +9,16 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="550.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practice.speedtyping.LogInController">
    <children>
       <BorderPane prefHeight="400.0" prefWidth="600.0" styleClass="border-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <top>
-            <Label alignment="CENTER" prefHeight="45.0" prefWidth="600.0" text="Авторизация" BorderPane.alignment="CENTER" />
+            <Label alignment="CENTER" prefHeight="45.0" prefWidth="600.0" text="Авторизация" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="18.0" />
+               </font></Label>
          </top>
          <bottom>
             <HBox alignment="CENTER" prefHeight="50.0" prefWidth="600.0" spacing="35.0" BorderPane.alignment="CENTER">
@@ -29,8 +33,14 @@
                <children>
                   <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="150.0" spacing="30.0">
                      <children>
-                        <Label text="Пользователь:" />
-                        <Label text="Пароль:" />
+                        <Label text="Пользователь:">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <Label text="Пароль:">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
                      </children>
                   </VBox>
                   <VBox alignment="CENTER_LEFT" fillWidth="false" prefHeight="200.0" prefWidth="300.0" spacing="25.0">

@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataBaseConnection {
+public class DataBaseSession {
     private String _username;
     private String _pass;
     private static String _url = "jdbc:postgresql://localhost:5432/speedtyping";
     private Connection _con = null;
     
-    public DataBaseConnection(String username, String pass) throws Exception{
+    public DataBaseSession(String username, String pass) throws Exception{
         _username = username;
         _pass = pass;
         checkUser();
@@ -54,17 +54,29 @@ public class DataBaseConnection {
                 try {_con.close();} catch (SQLException ex) {}
         }
     }
-   
-     
-    private ResultSet executeQuery(String query){
-        ResultSet rs = null;
+    
+    public List<String> getWords(int count,int lang) throws Exception{
+        try {
+            String query = "SELECT * FROM words WHERE lang_id ="+lang+" ORDER BY RANDOM() LIMIT "+count+";";
+            ResultSet rs = executeQuery(query);
+            List<String> list = new ArrayList<>();
+            while(rs.next()){
+                list.add(rs.getString(3));
+            }
+            return list;
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBaseSession.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
+        }
+    }
+    
+    private ResultSet executeQuery(String query) throws Exception{
         try {
             _con = DriverManager.getConnection(_url, _username, _pass);
                 Statement st = _con.createStatement();
-                rs = st.executeQuery(query);
-                return rs;
+                return st.executeQuery(query);
         } catch (SQLException ex) {
-            return rs;
+            throw ex;
         }finally{
             if(_con!=null)
                 try {_con.close();} catch (SQLException ex) {}

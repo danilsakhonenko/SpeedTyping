@@ -37,7 +37,7 @@ public class LogInController {
         try {
             Stage stage = (Stage) login_btn.getScene().getWindow();
             setUserData();
-            DataBaseConnection session = new DataBaseConnection(_username, _pass);
+            DataBaseSession session = new DataBaseSession(_username, _pass);
             RunMainForm(session);
             stage.close();
         } catch (Exception ex) {
@@ -51,7 +51,7 @@ public class LogInController {
     void registerUser(ActionEvent event) {
         try {
             setUserData();
-            DataBaseConnection.createUser(_username, _pass);
+            DataBaseSession.createUser(_username, _pass);
             //вывод окна успех
         } catch (Exception ex) {
             //вывод окна ошибки
@@ -68,7 +68,7 @@ public class LogInController {
         _pass = pass_field.getText();
     }
 
-    private void RunMainForm(DataBaseConnection session) throws Exception{
+    private void RunMainForm(DataBaseSession session) throws Exception{
         Stage newstage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
         newstage.setScene(new Scene(loader.load()));
