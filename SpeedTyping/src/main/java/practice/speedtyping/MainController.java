@@ -2,6 +2,8 @@ package practice.speedtyping;
 
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -20,14 +22,13 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
+
 public class MainController {
     private DataBaseSession _session;
     private int _wordsCount;
     private Tracker _tracker =null;
-    ArrayList<Label> _charLabels;
+    private ArrayList<Label> _charLabels;
     
-    @FXML
-    private ResourceBundle resources;
 
     @FXML
     private Button cancel_btn;
@@ -62,10 +63,11 @@ public class MainController {
     @FXML
     void cancelProgress(ActionEvent event) {
         stopTest();
+        
     }
 
     @FXML
-    void controlPlay(ActionEvent event) throws Exception {
+    void controlPlay(ActionEvent event) {
         if(_tracker==null){
             startTest();
         }else if (_tracker.isPaused()){
@@ -73,14 +75,18 @@ public class MainController {
         }else if (!_tracker.isPaused()){
             pauseTest();
         }
-        
+        words_area.requestFocus();
     }
    
     @FXML
-    void resetProgress(ActionEvent event) {
-        //_tracker.reset();
-        words_area.getChildren().clear();
-        //String str = _tracker.getStr();
+    void resetProgress(ActionEvent event){
+        try {
+            _tracker.reset();
+            words_area.getChildren().clear();
+            setLabels();
+        } catch (Exception ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
@@ -91,11 +97,12 @@ public class MainController {
         if(_tracker.isCorrectChar(event.getCharacter().charAt(0))){
             label = _charLabels.get(_tracker.getCurrentIndex()-1);
             label.setBackground(new Background(new BackgroundFill(Color.LIGHTGREEN, new CornerRadii(4), new Insets(0))));
+            if(_tracker.isFinished())
+                showResult();
         }else{
             label = _charLabels.get(_tracker.getCurrentIndex());
             label.setBackground(new Background(new BackgroundFill(Color.LIGHTCORAL, new CornerRadii(4), new Insets(0))));
         }
-        //_tracker.checkchar();
     }
     
     @FXML
@@ -131,7 +138,7 @@ public class MainController {
         cancel_btn.setGraphic(imageView);
         imageView = new ImageView(getClass().getResource("images/reset.png").toExternalForm());
         reset_btn.setGraphic(imageView);
-        setButtonsEnability(false);
+        buttonsSetDisable(true);
     }
     
     private void setGraphComboBox(){
@@ -142,19 +149,23 @@ public class MainController {
         });
     }
     
-    private void startTest() throws Exception{
-        _wordsCount = Integer.parseInt(word_count_field.getText());
-        if(_wordsCount < 1 && _wordsCount> 450)
-            throw new Exception();
-        int language = language_cb.getSelectionModel().getSelectedIndex()+1;
-        boolean punct = punctuation_check.isSelected();
-        _tracker=new Tracker();
-        _tracker.startTest(_wordsCount,punct,language,_session);
+    private void startTest(){
         
-        setLabels();
-        word_count_field.setDisable(true);
-        setControlBtnImage(false);
-        setButtonsEnability(true);
+        try {
+            _wordsCount = Integer.parseInt(word_count_field.getText());
+            if(_wordsCount < 5 && _wordsCount> 450)
+                throw new Exception();
+            int language = language_cb.getSelectionModel().getSelectedIndex()+1;
+            boolean punct = punctuation_check.isSelected();
+            _tracker=new Tracker();
+            _tracker.startTest(_wordsCount,punct,language,_session);
+            setLabels();
+            setControlBtnImage(false);
+            buttonsSetDisable(false);
+            optionsSetDisable(true);
+        } catch (Exception ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void setLabels(){
@@ -163,29 +174,27 @@ public class MainController {
         for (char c: chars){
             Label label = new Label(String.valueOf(c));
             label.setFont(Font.font ("Courier New", 26));
-            //label.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(4), new Insets(0))));
             _charLabels.add(label);
             words_area.getChildren().add(label);
         }
     }
     
     private void continueTest(){
-        _wordsCount = Integer.parseInt(word_count_field.getText());
         setControlBtnImage(false);
-        //tracker.unpauseTimer();
+        _tracker.unpause();
     }
     
     private void pauseTest(){
-        _wordsCount = Integer.parseInt(word_count_field.getText());
         setControlBtnImage(true);
-        //tracker.pauseTimer();
+        _tracker.pause();
     }
     
     private void stopTest(){
-        //_tracker.stop();
         words_area.getChildren().clear();
         setControlBtnImage(true);
-        setButtonsEnability(false);
+        optionsSetDisable(false);
+        buttonsSetDisable(true);
+        _tracker = null;
     }
 
     private void setControlBtnImage(boolean state){
@@ -197,13 +206,29 @@ public class MainController {
         control_btn.setGraphic(imageView);
     }
     
-    private void setButtonsEnability(boolean state){
-        if(!state){
-            reset_btn.setDisable(true);
-            cancel_btn.setDisable(true);
-        }else{
-            reset_btn.setDisable(false);
-            cancel_btn.setDisable(false);
+    private void buttonsSetDisable(boolean state){
+        reset_btn.setDisable(state);
+        cancel_btn.setDisable(state);
+    }
+    
+    private void optionsSetDisable(boolean state){
+        language_cb.setDisable(state);
+        word_count_field.setDisable(state);
+        punctuation_check.setDisable(state);
+    }
+    
+    private void showResult(){
+        try {
+            Object[] result = _tracker.getResult();
+            stopTest();
+            for(Object o : result){
+                System.out.println(o.toString());
+            }
+            _session.insertResult(result);
+            //вывод окна результата, удаление всего установка дизейбла на кнопки и енабла на контролы
+        } catch (Exception ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
 }

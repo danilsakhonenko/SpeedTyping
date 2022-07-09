@@ -11,7 +11,7 @@ public class StringGenerator {
     private boolean _punctuation;
     private DataBaseSession _session;
     private int _language;
-    List<String> _punctArr;
+    private List<String> _punctArr;
 
     public StringGenerator(int count, boolean punct, int language, DataBaseSession session) {
         _punctArr = Arrays.asList(",", ".", "!", "?", ";");
@@ -29,7 +29,7 @@ public class StringGenerator {
             int punct_count = rand.nextInt((int)_count / 2);
             for (int i = 0; i < punct_count; i++) {
                 int j = rand.nextInt(_punctArr.size()- 1);
-                list.add(rand.nextInt(list.size()), _punctArr.get(i));
+                list.add(rand.nextInt(list.size()), _punctArr.get(j));
             }
         }
         for(String s: list){

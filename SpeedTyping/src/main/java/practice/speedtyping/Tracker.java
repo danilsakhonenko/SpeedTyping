@@ -3,26 +3,44 @@ package practice.speedtyping;
 public class Tracker {
     private StringGenerator _sg;
     private boolean _paused = true;
+    private boolean _finished =false;
     private int _errorCount;
-    private int _stringLenght;
     private int _current;
     private int _correctCount;
-    char[] _chars;
+    private char[] _chars;
+    private Stopwatch _watch;
+    
     
     public boolean isPaused(){
         return _paused;
     }
     
+    public boolean isFinished(){
+        return _finished;
+    }
+    
     public void startTest(int count,boolean punct, int language, DataBaseSession session) throws Exception{
         _sg = new StringGenerator(count,punct,language,session);
-        _chars = _sg.Generate().toCharArray();
-        _current=0;
+        reset();
+    }
+    
+    public void pause(){
+        _paused = true;
+        _watch.pause();
+    }
+    
+    public void unpause(){
         _paused = false;
+        _watch.start();
     }
     
     public void reset() throws Exception{
         _chars = _sg.Generate().toCharArray();
-        
+        _current = 0;
+        _errorCount = 0;
+        _paused = false;
+        _watch= new Stopwatch();
+  
     }
     
     public char[] getChars(){
@@ -35,14 +53,28 @@ public class Tracker {
             _correctCount++;
             _current++;
             result = true;
+            if(_current == _chars.length){
+                _watch.stop();
+                _finished = true;
+            }
         }
-        else
+        else{
             result = false;
+            _errorCount++;
+        }
         return result;
     }
     
     public int getCurrentIndex(){
         return _current;
+    }
+    
+    public Object[] getResult(){
+        int seconds = _watch.getSeconds();
+        int minuteSpeed = (int)(_chars.length/(float)(seconds/60.0));
+        float errorRatio = _errorCount/(float)_chars.length;
+        Object[] result = {_chars.length,seconds,_errorCount, minuteSpeed,errorRatio};
+        return result;
     }
     
 }

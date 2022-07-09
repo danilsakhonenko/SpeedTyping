@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 public class App extends Application {
 
@@ -14,6 +15,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage){
         try {
+            Calendar calendar = Calendar.getInstance();
+            System.out.println(calendar.getTime());
             Scene scene = new Scene(new FXMLLoader(getClass().getResource("LogInForm.fxml")).load());
             stage.setScene(scene);
             stage.show();
