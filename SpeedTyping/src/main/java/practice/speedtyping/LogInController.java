@@ -1,7 +1,5 @@
 package practice.speedtyping;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,7 +39,7 @@ public class LogInController {
             RunMainForm(session);
             stage.close();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            new DialogMessage("Ошибка подключения. Проверьте правильность логина и пароля").ErrorMessage();
         }
     }
     
@@ -52,9 +50,9 @@ public class LogInController {
         try {
             setUserData();
             DataBaseSession.createUser(_username, _pass);
-            //вывод окна успех
+            new DialogMessage("Пользователь "+_username+" успешно зарегистрирован!").InfoMessage();
         } catch (Exception ex) {
-            //вывод окна ошибки
+            new DialogMessage(ex.getMessage()).ErrorMessage();
         }
     }
     

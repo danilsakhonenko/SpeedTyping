@@ -6,7 +6,8 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 
 public class StatBuilder {
-    private LineChart _chart;
+    private final LineChart _chart;
+    
     public StatBuilder(LineChart chart){  
         _chart = chart;
     }
@@ -38,7 +39,7 @@ public class StatBuilder {
             builder.append("Дата: ").append(list.get(3)).append("\n");
             builder.append("Скорость печати (зн/м): ").append(list.get(1)).append("\n");
             float percent = Float.parseFloat(list.get(2))*(float)100.0;
-            builder.append("Часть ошибок при вводе (%): ").append(new DecimalFormat("#0.00").format(percent)).append("\n");
+            builder.append("Процент ошибок в тексте (%): ").append(new DecimalFormat("#0.00").format(percent)).append("\n");
         }
         return builder.toString();
     }

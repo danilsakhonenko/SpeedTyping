@@ -58,7 +58,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>MailClient</finalName>
+                    <finalName>SpeedTyping</finalName>
                     <archive>
                         <manifest>
                             <mainClass>practice.speedtyping.MainClass</mainClass>

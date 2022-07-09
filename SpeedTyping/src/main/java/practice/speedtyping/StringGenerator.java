@@ -1,17 +1,16 @@
 package practice.speedtyping;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class StringGenerator {
 
-    private int _count;
-    private boolean _punctuation;
-    private DataBaseSession _session;
-    private int _language;
-    private List<String> _punctArr;
+    private final int _count;
+    private final boolean _punctuation;
+    private final DataBaseSession _session;
+    private final int _language;
+    private final List<String> _punctArr;
 
     public StringGenerator(int count, boolean punct, int language, DataBaseSession session) {
         _punctArr = Arrays.asList(",", ".", "!", "?", ";");

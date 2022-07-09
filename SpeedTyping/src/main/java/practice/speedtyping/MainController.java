@@ -89,7 +89,7 @@ public class MainController {
             setLabels();
             words_area.requestFocus();
         } catch (Exception ex) {
-           
+           new DialogMessage("Во время запуска текста возникла ошибка: "+ex.getMessage()).ErrorMessage();
         }
     }
 
@@ -168,7 +168,7 @@ public class MainController {
                 int index = graphic_cb.getSelectionModel().getSelectedIndex();
                 _statBuilder.buildChart(_session.loadResults(index),index);
             }catch(Exception ex){
-                System.out.println(ex.getMessage());
+                new DialogMessage("Ошибка загрузки графика: "+ex.getMessage()).ErrorMessage();
             }
         });
     }
@@ -177,7 +177,8 @@ public class MainController {
         try {
             _wordsCount = Integer.parseInt(word_count_field.getText());
             if(_wordsCount < 5 && _wordsCount> 450)
-                throw new Exception();
+                new DialogMessage("Недопустимое значение. Условия для количества слов "
+                        + "5 < количество слов < 450.").WarningMessage();
             int language = language_cb.getSelectionModel().getSelectedIndex()+1;
             boolean punct = punctuation_check.isSelected();
             _tracker=new Tracker();
@@ -187,7 +188,7 @@ public class MainController {
             buttonsSetDisable(false);
             optionsSetDisable(true);
         } catch (Exception ex) {
-            
+            new DialogMessage("Во время запуска текста возникла ошибка: "+ex.getMessage()).ErrorMessage();
         }
     }
     
@@ -250,7 +251,7 @@ public class MainController {
             _session.insertResult(result);
             //вывод окна результата, удаление всего установка дизейбла на кнопки и енабла на контролы
         } catch (Exception ex) {
-            
+            new DialogMessage("Ошибка сохранения результатов: "+ex.getMessage()).ErrorMessage();
         }
     }
     
