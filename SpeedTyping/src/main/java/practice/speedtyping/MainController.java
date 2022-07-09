@@ -1,9 +1,8 @@
 package practice.speedtyping;
 
 import java.util.ArrayList;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -12,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -26,10 +27,13 @@ import javafx.scene.paint.Color;
 public class MainController {
     private DataBaseSession _session;
     private int _wordsCount;
-    private Tracker _tracker =null;
+    private Tracker _tracker;
     private ArrayList<Label> _charLabels;
+    private StatBuilder _statBuilder;
     
-
+    @FXML
+    private TabPane main_window;
+     
     @FXML
     private Button cancel_btn;
 
@@ -40,7 +44,7 @@ public class MainController {
     private TilePane words_area;
 
     @FXML
-    private LineChart<?, ?> graphic;
+    private LineChart<Number, Number> graphic;
 
     @FXML
     private ComboBox<String> graphic_cb;
@@ -63,7 +67,6 @@ public class MainController {
     @FXML
     void cancelProgress(ActionEvent event) {
         stopTest();
-        
     }
 
     @FXML
@@ -84,8 +87,9 @@ public class MainController {
             _tracker.reset();
             words_area.getChildren().clear();
             setLabels();
+            words_area.requestFocus();
         } catch (Exception ex) {
-            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+           
         }
     }
 
@@ -105,21 +109,36 @@ public class MainController {
         }
     }
     
-    @FXML
-    void tabChange(ActionEvent event) {
-        if(_tracker!=null){
-            stopTest();
-            _tracker=null;
-        }
-    }
+
 
     @FXML
     void initialize() {
+        main_window.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                loadStatsTab(t1);
+            }
+        });
         setButtons();
         setLanguages();
         word_count_field.setText("10");
         setGraphComboBox();
+        
     }
+    
+    void loadStatsTab(Tab newTab) {
+        if(_statBuilder == null)
+            _statBuilder = new StatBuilder(graphic);
+        if(newTab.getId().equals("stats")){
+            try {
+                String s = _statBuilder.buildLastStat(_session.loadLastResult());
+                statistics_field.setText(s);
+            } catch (Exception ex) {
+               
+            }
+        }
+    }
+    
     
     void setSession(DataBaseSession session){
         _session = session;
@@ -143,14 +162,18 @@ public class MainController {
     
     private void setGraphComboBox(){
         graphic_cb.getItems().add(0, "Cкорость печати");
-        graphic_cb.getItems().add(1, "Коэффициент ошибок");
+        graphic_cb.getItems().add(1, "Процент ошибок");
         graphic_cb.setOnAction(event -> {
-            //_session.getStatistics();
+            try{
+                int index = graphic_cb.getSelectionModel().getSelectedIndex();
+                _statBuilder.buildChart(_session.loadResults(index),index);
+            }catch(Exception ex){
+                System.out.println(ex.getMessage());
+            }
         });
     }
     
     private void startTest(){
-        
         try {
             _wordsCount = Integer.parseInt(word_count_field.getText());
             if(_wordsCount < 5 && _wordsCount> 450)
@@ -164,7 +187,7 @@ public class MainController {
             buttonsSetDisable(false);
             optionsSetDisable(true);
         } catch (Exception ex) {
-            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }
     
@@ -227,7 +250,7 @@ public class MainController {
             _session.insertResult(result);
             //вывод окна результата, удаление всего установка дизейбла на кнопки и енабла на контролы
         } catch (Exception ex) {
-            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }
     

@@ -18,9 +18,9 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyTyped="#keyCheck" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practice.speedtyping.MainController">
+<TabPane fx:id="main_window" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyTyped="#keyCheck" prefHeight="720.0" prefWidth="1280.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="practice.speedtyping.MainController">
   <tabs>
-    <Tab text="Тест на скорость печати">
+    <Tab fx:id="main_tab" text="Тест на скорость печати">
          <content>
             <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="border-pane">
                <bottom>
@@ -72,13 +72,13 @@
                </center>
             </BorderPane>
          </content></Tab>
-    <Tab text="Статистика">
+    <Tab fx:id="stats" text="Статистика">
          <content>
             <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="border-pane">
                <top>
                   <BorderPane prefHeight="300.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <top>
-                        <Label prefHeight="35.0" text="Последняя статистика" BorderPane.alignment="CENTER">
+                        <Label prefHeight="35.0" text="Последний результат" BorderPane.alignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font></Label>
@@ -95,7 +95,7 @@
                         </FlowPane>
                      </bottom>
                      <center>
-                        <TextArea fx:id="statistics_field" prefHeight="220.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                        <TextArea fx:id="statistics_field" editable="false" prefHeight="220.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
                      </center>
                   </BorderPane>
                </top>

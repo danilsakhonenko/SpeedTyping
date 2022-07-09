@@ -21,7 +21,7 @@ public class App extends Application {
             stage.setScene(scene);
             stage.show();
         } catch (IOException ex) {
-            //new DialogMessage("Во время выполнения программы возникла ошибка").ShowConsoleMessage();
+            
         }
     }
 
