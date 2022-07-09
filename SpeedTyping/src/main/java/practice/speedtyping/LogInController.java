@@ -61,7 +61,10 @@ public class LogInController {
 
     }
     
-    private void setUserData(){
+    private void setUserData() throws Exception{
+        if(user_field.getText().length()>30){
+            throw new Exception("Слишком большая длина логина (>30)");
+        }
         _username = user_field.getText();
         _pass = pass_field.getText();
     }
