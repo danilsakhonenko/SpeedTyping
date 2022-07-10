@@ -26,7 +26,6 @@ import javafx.scene.paint.Color;
 
 public class MainController {
     private DataBaseSession _session;
-    private int _wordsCount;
     private Tracker _tracker;
     private ArrayList<Label> _charLabels;
     private StatBuilder _statBuilder;
@@ -66,7 +65,7 @@ public class MainController {
 
     @FXML
     void cancelProgress(ActionEvent event) {
-        stopTest();
+        cancelTest();
     }
 
     @FXML
@@ -86,7 +85,7 @@ public class MainController {
         try {
             _tracker.reset();
             words_area.getChildren().clear();
-            setLabels();
+            setLetters();
             words_area.requestFocus();
         } catch (Exception ex) {
            new DialogMessage("Во время запуска текста возникла ошибка: "+ex.getMessage()).ErrorMessage();
@@ -131,7 +130,7 @@ public class MainController {
             _statBuilder = new StatBuilder(graphic);
         if(newTab.getId().equals("stats")){
             try {
-                String s = _statBuilder.buildLastStat(_session.loadLastResult());
+                String s = _statBuilder.buildLastStat(_session.getLastResult());
                 statistics_field.setText(s);
             } catch (Exception ex) {
                
@@ -157,7 +156,7 @@ public class MainController {
         cancel_btn.setGraphic(imageView);
         imageView = new ImageView(getClass().getResource("images/reset.png").toExternalForm());
         reset_btn.setGraphic(imageView);
-        buttonsSetDisable(true);
+        buttonsSetDisabled(true);
     }
     
     private void setGraphComboBox(){
@@ -166,7 +165,7 @@ public class MainController {
         graphic_cb.setOnAction(event -> {
             try{
                 int index = graphic_cb.getSelectionModel().getSelectedIndex();
-                _statBuilder.buildChart(_session.loadResults(index),index);
+                _statBuilder.buildChart(_session.getResults(index),index);
             }catch(Exception ex){
                 new DialogMessage("Ошибка загрузки графика: "+ex.getMessage()).ErrorMessage();
             }
@@ -175,24 +174,24 @@ public class MainController {
     
     private void startTest(){
         try {
-            _wordsCount = Integer.parseInt(word_count_field.getText());
+            int _wordsCount = Integer.parseInt(word_count_field.getText());
             if(_wordsCount < 5 && _wordsCount> 450)
                 new DialogMessage("Недопустимое значение. Условия для количества слов "
                         + "5 < количество слов < 450.").WarningMessage();
             int language = language_cb.getSelectionModel().getSelectedIndex()+1;
             boolean punct = punctuation_check.isSelected();
             _tracker=new Tracker();
-            _tracker.startTest(_wordsCount,punct,language,_session);
-            setLabels();
+            _tracker.start(_wordsCount,punct,language,_session);
+            setLetters();
             setControlBtnImage(false);
-            buttonsSetDisable(false);
-            optionsSetDisable(true);
+            buttonsSetDisabled(false);
+            optionsSetDisabled(true);
         } catch (Exception ex) {
             new DialogMessage("Во время запуска текста возникла ошибка: "+ex.getMessage()).ErrorMessage();
         }
     }
     
-    private void setLabels(){
+    private void setLetters(){
         _charLabels = new ArrayList<>();
         char[] chars = _tracker.getChars();
         for (char c: chars){
@@ -213,11 +212,11 @@ public class MainController {
         _tracker.pause();
     }
     
-    private void stopTest(){
+    private void cancelTest(){
         words_area.getChildren().clear();
         setControlBtnImage(true);
-        optionsSetDisable(false);
-        buttonsSetDisable(true);
+        optionsSetDisabled(false);
+        buttonsSetDisabled(true);
         _tracker = null;
     }
 
@@ -230,12 +229,12 @@ public class MainController {
         control_btn.setGraphic(imageView);
     }
     
-    private void buttonsSetDisable(boolean state){
+    private void buttonsSetDisabled(boolean state){
         reset_btn.setDisable(state);
         cancel_btn.setDisable(state);
     }
     
-    private void optionsSetDisable(boolean state){
+    private void optionsSetDisabled(boolean state){
         language_cb.setDisable(state);
         word_count_field.setDisable(state);
         punctuation_check.setDisable(state);
@@ -244,12 +243,11 @@ public class MainController {
     private void showResult(){
         try {
             Object[] result = _tracker.getResult();
-            stopTest();
-            for(Object o : result){
-                System.out.println(o.toString());
-            }
+            cancelTest();
             _session.insertResult(result);
-            //вывод окна результата, удаление всего установка дизейбла на кнопки и енабла на контролы
+            if(_statBuilder == null)
+                _statBuilder = new StatBuilder(graphic);
+            new DialogMessage(_statBuilder.buildLastStat(result)).InfoMessage();
         } catch (Exception ex) {
             new DialogMessage("Ошибка сохранения результатов: "+ex.getMessage()).ErrorMessage();
         }

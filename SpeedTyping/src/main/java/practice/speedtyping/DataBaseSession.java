@@ -110,7 +110,7 @@ public class DataBaseSession {
         execInsertQuery(query);
     }
 
-    public List<String> loadLastResult() throws Exception {
+    public List<String> getLastResult() throws Exception {
         String query = "SELECT a.* FROM results a INNER JOIN "
                 + "(SELECT username, MAX(test_date) mxdate FROM results "
                 + "WHERE username = '"+_username+"' GROUP BY username ) "
@@ -126,14 +126,16 @@ public class DataBaseSession {
         return list;
     }
     
-    public List<Object> loadResults(int type) throws Exception {
+    public List<Object> getResults(int type) throws Exception {
         String query;
         switch(type){
             case 0:
-                query = "SELECT  speed, test_date FROM results WHERE username = '"+_username+"' ORDER BY test_date";
+                query = "SELECT  speed, test_date FROM results "
+                        + "WHERE username = '"+_username+"' ORDER BY test_date";
                 break;
             case 1:
-                query = "SELECT  error_ratio, test_date FROM results WHERE username = '"+_username+"' ORDER BY test_date";
+                query = "SELECT  error_ratio, test_date FROM results "
+                        + "WHERE username = '"+_username+"' ORDER BY test_date";
                 break;
             default:
                 throw new Exception();
