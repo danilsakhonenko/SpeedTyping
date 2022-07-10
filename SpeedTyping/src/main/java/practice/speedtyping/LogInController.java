@@ -9,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class LogInController {
-    
     @FXML
     private Button login_btn;
 
@@ -31,7 +30,7 @@ public class LogInController {
             RunMainForm();
             stage.close();
         } catch (Exception ex) {
-            new DialogMessage("Ошибка подключения. Проверьте правильность логина и пароля").ErrorMessage();
+            new DialogMessage("Ошибка подключения."+ex.getMessage()).ErrorMessage();
         }
     }
 
@@ -39,7 +38,7 @@ public class LogInController {
     void registerUser(ActionEvent event) {
         try {
             checkLength(user_field.getText());
-            DataBaseSession.createUser(user_field.getText(),pass_field.getText());
+            new DataBaseSession().addUser(user_field.getText(), pass_field.getText());
             new DialogMessage("Пользователь "+user_field.getText()+" успешно зарегистрирован!").InfoMessage();
         } catch (Exception ex) {
             new DialogMessage(ex.getMessage()).ErrorMessage();
@@ -58,7 +57,9 @@ public class LogInController {
     }
 
     private void RunMainForm() throws Exception{
-        DataBaseSession session = new DataBaseSession(user_field.getText(),pass_field.getText());
+        DataBaseSession session = new DataBaseSession();
+        if(!session.checkUser(user_field.getText(), pass_field.getText()))
+            throw new Exception("Проверьте правильность логина и пароля.");
         Stage newstage = new Stage();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
         newstage.setScene(new Scene(loader.load()));

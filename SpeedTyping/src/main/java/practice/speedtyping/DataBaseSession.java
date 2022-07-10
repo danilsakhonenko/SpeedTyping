@@ -11,27 +11,29 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class DataBaseSession {
 
+public class DataBaseSession {
+    private final String _role = "typing_user";
+    private final String _rolePass = "1234";
     private String _username;
     private String _pass;
-    private static String _url = "jdbc:postgresql://localhost:5432/speedtyping";
+    private final String _url = "jdbc:postgresql://localhost:5432/speedtyping";
     private Connection _con = null;
 
-    public DataBaseSession(String username, String pass) throws Exception {
-        _username = username;
-        _pass = pass;
-        checkUser();
+    private Connection getConnection(String role, String pass) throws SQLException{
+        Connection con = DriverManager.getConnection(_url, role, pass);
+        return con;
     }
-
-    static public void createUser(String username, String pass) throws Exception {
-        String createQuery = "CREATE USER " + username + " WITH PASSWORD '" + pass + "';"
-                + "GRANT CONNECT ON DATABASE speedtyping TO " + username + ";"
-                + "GRANT INSERT, SELECT ON ALL TABLES IN SCHEMA public TO " + username + ";"
-                + "GRANT USAGE, SELECT ON SEQUENCE results_id_seq TO " + username + ";";
+    
+    public void createRole() throws Exception {
+        String createQuery = "CREATE USER " + _role + " WITH PASSWORD '" + _rolePass + "';"
+                + "GRANT CONNECT ON DATABASE speedtyping TO " + _role + ";"
+                + "GRANT INSERT, SELECT ON ALL TABLES IN SCHEMA public TO " + _role + ";"
+                + "GRANT USAGE, SELECT ON SEQUENCE results_id_seq TO " + _role + ";"
+                + "GRANT USAGE, SELECT ON SEQUENCE program_users_id_seq TO " + _role + ";";
         Connection con = null;
         try {
-            con = DriverManager.getConnection(_url, "postgres", "1234");
+            con = getConnection("postgres", "1234");
             Statement st = con.createStatement();
             st.execute(createQuery);
         } catch (SQLException ex) {
@@ -44,19 +46,38 @@ public class DataBaseSession {
             }
         }
     }
-
-    private void checkUser() throws Exception {
-        try {
-            _con = DriverManager.getConnection(_url, _username, _pass);
-            _con.close();
-        } catch (SQLException ex) {
-            throw ex;
-        } finally {
-            if (_con != null)
-                try {
-                _con.close();
-            } catch (SQLException ex) {
+    
+    public void addUser(String username, String pass) throws Exception {
+        try{
+            String query = "INSERT INTO program_users(username, password) VALUES ('"+username+"', '"+pass+"');";
+            execInsertQuery(query);
+        }catch(SQLException ex){
+            try{
+                createRole();
+                addUser(username, pass);
+            }catch(SQLException ex1){throw ex;}
+        }
+    }
+    
+    public boolean checkUser(String username, String pass) throws Exception {
+        boolean result = false;
+        try{
+            String query = "SELECT * FROM program_users WHERE username = '"+username+"' AND password = '"+pass+"';";
+            ResultSet rs = execSelectQuery(query);
+            if(!rs.next())
+                result = false;
+            else{
+                _username = username;
+                _pass = pass;
+                result = true;
             }
+        }catch(SQLException ex){
+            try{
+                createRole();
+                result = true;
+            }catch(SQLException ex1){throw ex;}
+        }finally{
+            return result;
         }
     }
 
@@ -72,7 +93,7 @@ public class DataBaseSession {
 
     private ResultSet execSelectQuery(String query) throws Exception {
         try {
-            _con = DriverManager.getConnection(_url, _username, _pass);
+            _con = getConnection(_role, _rolePass);
             Statement st = _con.createStatement();
             return st.executeQuery(query);
         } catch (SQLException ex) {
@@ -88,7 +109,7 @@ public class DataBaseSession {
 
     private void execInsertQuery(String query) throws Exception {
         try {
-            _con = DriverManager.getConnection(_url, _username, _pass);
+            _con = getConnection(_role, _rolePass);
             PreparedStatement pst = _con.prepareStatement(query);
             pst.executeUpdate();
         } catch (SQLException ex) {
@@ -106,22 +127,24 @@ public class DataBaseSession {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String date = formatter.format(calendar.getTime());
-        String query = "INSERT INTO results(username,test_date,speed,error_ratio) VALUES('" + _username + "', '" + date + "', " + (int) results[3] + ", " + results[4] + ");";
+        String query = "INSERT INTO results(user_id,test_date,speed,error_ratio) "
+                + "VALUES ((SELECT id FROM program_users WHERE username = '"+_username+"'), "
+                + "'" + date + "', " + (int) results[3] + ", " + results[4] + ");";
         execInsertQuery(query);
     }
-
+    
     public List<String> getLastResult() throws Exception {
-        String query = "SELECT a.* FROM results a INNER JOIN "
-                + "(SELECT username, MAX(test_date) mxdate FROM results "
-                + "WHERE username = '"+_username+"' GROUP BY username ) "
-                + "b ON a.username = b.username AND a.test_date = b.mxdate;";
+       String query = "SELECT c.username, a.test_date, a.speed, a.error_ratio "
+               + "FROM results a INNER JOIN (SELECT MAX(a.test_date) mxdate FROM results a) b "
+               + "ON a.test_date = b.mxdate "
+               + "JOIN program_users c ON a.user_id = c.id WHERE c.username= '"+_username+"';";
         ResultSet rs = execSelectQuery(query);
         List<String> list = new ArrayList<>();
         if (rs.next()) {
+            list.add(rs.getString(1));
             list.add(rs.getString(2));
             list.add(rs.getString(3));
             list.add(rs.getString(4));
-            list.add(rs.getString(5));
         }
         return list;
     }
@@ -130,12 +153,14 @@ public class DataBaseSession {
         String query;
         switch(type){
             case 0:
-                query = "SELECT  speed, test_date FROM results "
-                        + "WHERE username = '"+_username+"' ORDER BY test_date";
+                query = "SELECT  a.speed, a.test_date FROM results a "
+                        + "JOIN program_users b ON a.user_id = b.id "
+                        + "WHERE b.username = '"+_username+"' ORDER BY a.test_date";
                 break;
             case 1:
-                query = "SELECT  error_ratio, test_date FROM results "
-                        + "WHERE username = '"+_username+"' ORDER BY test_date";
+                query = "SELECT  a.error_ratio, a.test_date FROM results a "
+                        + "JOIN program_users b ON a.user_id = b.id "
+                        + "WHERE b.username = '"+_username+"' ORDER BY a.test_date";
                 break;
             default:
                 throw new Exception();

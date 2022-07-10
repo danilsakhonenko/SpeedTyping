@@ -39,9 +39,9 @@ public class StatBuilder {
         StringBuilder builder = new StringBuilder();
         if(!list.isEmpty()){
             builder.append("Пользователь: ").append(list.get(0)).append("\n");
-            builder.append("Дата: ").append(list.get(3)).append("\n");
-            builder.append("Скорость печати (зн/м): ").append(list.get(1)).append("\n");
-            float percent = Float.parseFloat(list.get(2))*(float)100.0;
+            builder.append("Дата: ").append(list.get(1)).append("\n");
+            builder.append("Скорость печати (зн/м): ").append(list.get(2)).append("\n");
+            float percent = Float.parseFloat(list.get(3))*(float)100.0;
             builder.append("Процент ошибок в тексте (%): ").append(new DecimalFormat("#0.00").format(percent)).append("\n");
         }
         return builder.toString();
